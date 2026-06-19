@@ -1,0 +1,21 @@
+[general]
+name=GISNET QTools
+qgisMinimumVersion=3.0
+description=Narzędzia firmy GISNET
+version=0.1
+author=Grzegorz Gogolewski
+email=ggogolewski@gisnet.com.pl
+
+about=Plugin z narzędziami firmy GISNET
+
+repository=https://github.com/haldrigar/GISNET-QTools
+
+# Tags are comma separated with spaces allowed
+tags=python
+
+homepage=https://gisnet.com.pl
+category=Plugins
+icon=icon.png
+
+# experimental flag
+experimental=True
