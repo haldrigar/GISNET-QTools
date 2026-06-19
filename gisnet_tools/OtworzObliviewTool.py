@@ -1,34 +1,48 @@
 import webbrowser
+
+from qgis.core import (
+    QgsCoordinateReferenceSystem,
+    QgsCoordinateTransform,
+    QgsProject,
+)
 from qgis.gui import QgsMapToolEmitPoint
-from qgis.core import QgsProject, QgsCoordinateReferenceSystem, QgsCoordinateTransform
-from qgis.utils import iface
+from qgis.PyQt.QtWidgets import QMessageBox
+
 
 class OtworzObliviewTool(QgsMapToolEmitPoint):
-    def __init__(self, canvas):
+    """Narzędzie mapowe otwierające ObliView dla klikniętego punktu."""
+
+    TARGET_CRS = "EPSG:3857"
+
+    def __init__(self, canvas, iface):
         super().__init__(canvas)
         self.canvas = canvas
-        
-    def canvasReleaseEvent(self, e):
-        # 1. Pobierz punkt kliknięcia w układzie współrzędnych mapy
-        punkt_klikniety = self.toMapCoordinates(e.pos())
-        
-        # 2. Zdefiniuj układy współrzędnych
-        uklad_zrodlowy = QgsProject.instance().crs()
-        uklad_docelowy = QgsCoordinateReferenceSystem("EPSG:3857") # WGS84 Web Mercator
-        
-        # 3. Przelicz współrzędne (transformacja)
-        transformacja = QgsCoordinateTransform(uklad_zrodlowy, uklad_docelowy, QgsProject.instance())
-        punkt_3857 = transformacja.transform(punkt_klikniety)
-        
-        # 4. Wyciągnij X i Y dla EPSG:3857
-        x_3857 = punkt_3857.x()
-        y_3857 = punkt_3857.y()
-        
-        # 5. Zbuduj adres URL do Obliview
-        url = f"https://obliview.brg.gda.pl/?r=15&z=20&x={x_3857}&y={y_3857}"
-        
-        # 6. Otwórz w domyślnej przeglądarce internetowej
-        webbrowser.open(url)
-        
-        # 7. Po kliknięciu przywracamy zwykłą rączkę/przesuwanie mapy
-        iface.actionPan().trigger()
+        self.iface = iface
+
+    def canvasReleaseEvent(self, event):
+        """Obsługuje kliknięcie użytkownika na mapie."""
+        try:
+            clicked_point = self.toMapCoordinates(event.pos())
+            point_3857 = self._transform_point_to_target_crs(clicked_point)
+            url = self._build_obliview_url(point_3857.x(), point_3857.y())
+            webbrowser.open(url)
+        except Exception as exc:
+            QMessageBox.critical(
+                self.iface.mainWindow(),
+                "GISNET QTools",
+                f"Nie udało się otworzyć ObliView: {exc}",
+            )
+        finally:
+            self.iface.actionPan().trigger()
+
+    def _transform_point_to_target_crs(self, point):
+        """Transformuje punkt z CRS projektu do EPSG:3857 (Web Mercator)."""
+        source_crs = QgsProject.instance().crs()
+        target_crs = QgsCoordinateReferenceSystem(self.TARGET_CRS)
+        transform = QgsCoordinateTransform(source_crs, target_crs, QgsProject.instance())
+        return transform.transform(point)
+
+    @staticmethod
+    def _build_obliview_url(x_coord, y_coord):
+        """Buduje adres URL do portalu ObliView."""
+        return f"https://obliview.brg.gda.pl/?r=15&z=20&x={x_coord}&y={y_coord}"
