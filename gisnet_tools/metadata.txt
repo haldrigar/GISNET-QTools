@@ -2,13 +2,15 @@
 name=GISNET QTools
 qgisMinimumVersion=3.0
 description=Narzędzia firmy GISNET dla QGIS
-version=0.2
+version=0.1
 author=Grzegorz Gogolewski
 email=ggogolewski@gisnet.com.pl
 
 about=Wtyczka QGIS udostępniająca narzędzia GISNET, w tym szybkie otwieranie portalu ObliView dla wskazanego punktu na mapie.
 
 repository=https://github.com/haldrigar/GISNET-QTools
+tracker=https://github.com/haldrigar/GISNET-QTools/issues
+
 homepage=https://gisnet.com.pl
 tags=qgis, gisnet, obliview, python
 category=Plugins
