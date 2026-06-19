@@ -1,10 +1,11 @@
 import os
 
-from qgis.PyQt.QtCore import Qt # type: ignore
+from qgis.PyQt.QtCore import Qt, QSettings # type: ignore
 from qgis.PyQt.QtGui import QIcon # type: ignore
-from qgis.PyQt.QtWidgets import QAction, QToolBar # type: ignore
+from qgis.PyQt.QtWidgets import QAction, QInputDialog, QMessageBox, QToolBar # type: ignore
 
 from .OtworzObliviewTool import OtworzObliviewTool
+from .FiltrObrebTool import uruchom_filtr_obrebu
 
 
 class GisnetPlugin:
@@ -33,6 +34,13 @@ class GisnetPlugin:
             tekst="ObliView Gdańsk",
             metoda_callback=self.obliview_gdansk,
             status_tip="Uruchom portal ObliView Gdańska we wskazanym miejscu",
+        )
+
+        self.dodaj_przycisk_do_paska(
+            ikona_nazwa="filtr_obrebu.png",
+            tekst="Filtruj obręb",
+            metoda_callback=self.filtruj_obreb,
+            status_tip="Filtruje warstwy projektu po KOD_OBREBU",
         )
 
     def dodaj_przycisk_do_paska(self, ikona_nazwa, tekst, metoda_callback, status_tip=""):
@@ -66,3 +74,30 @@ class GisnetPlugin:
         """Uruchamia dedykowane narzędzie wyboru punktu na mapie."""
         self.this_tool = OtworzObliviewTool(self.iface.mapCanvas(), self.iface)
         self.iface.mapCanvas().setMapTool(self.this_tool)
+
+    def filtruj_obreb(self):
+        """Pyta o kod obrębu, zapamiętuje go i uruchamia filtrację warstw."""
+        settings = QSettings()
+        last_obreb = settings.value("GISNET_QTools/last_obreb", "", type=str)
+
+        kod_obrebu, ok = QInputDialog.getText(
+            self.iface.mainWindow(),
+            "Filtracja po obrębie",
+            "Podaj kod obrębu (KOD_OBREBU):",
+            text=last_obreb,
+        )
+
+        if not ok:
+            return
+
+        kod_obrebu = kod_obrebu.strip()
+        if not kod_obrebu:
+            QMessageBox.warning(self.iface.mainWindow(), "Brak danych", "Wpisz kod obrębu.")
+            return
+
+        settings.setValue("GISNET_QTools/last_obreb", kod_obrebu)
+
+        try:
+            uruchom_filtr_obrebu(kod_obrebu, self.iface)
+        except Exception as e:
+            QMessageBox.critical(self.iface.mainWindow(), "Błąd filtrowania", str(e))
