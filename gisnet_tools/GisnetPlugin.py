@@ -1,8 +1,8 @@
 import os
 
-from qgis.PyQt.QtCore import Qt
-from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QToolBar
+from qgis.PyQt.QtCore import Qt # type: ignore
+from qgis.PyQt.QtGui import QIcon # type: ignore
+from qgis.PyQt.QtWidgets import QAction, QToolBar # type: ignore
 
 from .OtworzObliviewTool import OtworzObliviewTool
 

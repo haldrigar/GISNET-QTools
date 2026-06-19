@@ -1,12 +1,12 @@
 import webbrowser
 
-from qgis.core import (
+from qgis.core import ( # type: ignore
     QgsCoordinateReferenceSystem,
     QgsCoordinateTransform,
     QgsProject,
 )
-from qgis.gui import QgsMapToolEmitPoint
-from qgis.PyQt.QtWidgets import QMessageBox
+from qgis.gui import QgsMapToolEmitPoint # type: ignore
+from qgis.PyQt.QtWidgets import QMessageBox # type: ignore
 
 
 class OtworzObliviewTool(QgsMapToolEmitPoint):
