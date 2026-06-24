@@ -1,19 +1,22 @@
 import os
 
-from qgis.PyQt.QtCore import Qt, QSettings # type: ignore
+from qgis.PyQt.QtCore import Qt # type: ignore
 from qgis.PyQt.QtGui import QIcon # type: ignore
 from qgis.PyQt.QtWidgets import QAction, QInputDialog, QMessageBox, QToolBar # type: ignore
 
-from .tools.OtworzObliviewTool import OtworzObliviewTool
+from .tools.Obliview import Obliview
 from .tools.FiltrObrebTool import uruchom_filtr_obrebu
 
+from .tools.Config import plugin_config
 
 class GisnetQTools:
 
     def __init__(self, iface): 
         """Klasa reprezentująca wtyczkę GISNET dla QGIS."""
 
-        self.iface = iface # QgsInterface
+        # save reference to the QGIS interface
+        self.iface = iface 
+
         self.plugin_dir = os.path.dirname(__file__) # Ścieżka do katalogu wtyczki
         self.toolbar = None # QToolBar
         self.toolbar_created_by_plugin = False # Flaga informująca, czy pasek narzędzi został utworzony przez wtyczkę
@@ -29,9 +32,9 @@ class GisnetQTools:
 
         self.add_button_to_toolbar(
             ikona_nazwa="obliview.png",
-            tekst="ObliView Gdańsk",
-            metoda_callback=self.obliview_gdansk,
-            status_tip="Uruchom portal ObliView Gdańska we wskazanym miejscu",
+            tekst="ObliView",
+            metoda_callback=self.obliview,
+            status_tip="Uruchom portal ObliView we wskazanym miejscu",
         )
 
         self.add_button_to_toolbar(
@@ -70,17 +73,16 @@ class GisnetQTools:
         self.toolbar_created_by_plugin = False
         self.this_tool = None
 
-    def obliview_gdansk(self):
+    def obliview(self):
         """Uruchamia dedykowane narzędzie wyboru punktu na mapie."""
 
-        self.this_tool = OtworzObliviewTool(self.iface.mapCanvas(), self.iface)
+        self.this_tool = Obliview(self.iface.mapCanvas(), self.iface)
         self.iface.mapCanvas().setMapTool(self.this_tool)
 
     def filtruj_obreb(self):
         """Pyta o kod obrębu, zapamiętuje go i uruchamia filtrację warstw."""
 
-        settings = QSettings()
-        last_obreb = settings.value("GISNET_QTools/last_obreb", "", type=str)
+        last_obreb = plugin_config.data.get("obreb")
 
         kod_obrebu, ok = QInputDialog.getText(
             self.iface.mainWindow(),
@@ -93,11 +95,13 @@ class GisnetQTools:
             return
 
         kod_obrebu = kod_obrebu.strip()
+        
         if not kod_obrebu:
             QMessageBox.warning(self.iface.mainWindow(), "Brak danych", "Wpisz kod obrębu.")
             return
 
-        settings.setValue("GISNET_QTools/last_obreb", kod_obrebu)
+        plugin_config.data["obreb"] = kod_obrebu
+        plugin_config.zapisz()
 
         try:
             uruchom_filtr_obrebu(kod_obrebu, self.iface)

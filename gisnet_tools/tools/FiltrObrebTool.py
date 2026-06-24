@@ -1,6 +1,5 @@
 from qgis.core import QgsProject # type: ignore
 
-
 def aplikuj_i_odswiez(nazwa_warstwy, kolumna_id, kod_obrebu):
     
     layers = QgsProject.instance().mapLayersByName(nazwa_warstwy) # Pobierz warstwę o podanej nazwie z projektu QGIS
@@ -67,13 +66,7 @@ def uruchom_filtr_obrebu(kod_obrebu, iface):
             if not zasieg.isEmpty():
                 iface.mapCanvas().setExtent(zasieg)
 
-        # 5. Wyczyść cache płótna i odśwież widok
-        print("Odświeżanie widoku...")
-        
-        iface.mapCanvas().clearCache()
-        iface.mapCanvas().refreshAllLayers()
-
-        print(f"Projekt wczytano dla obrębu {kod_obrebu}!")
+        print(f"Wczytano projekt dla obrębu {kod_obrebu}!")
 
     else:
         # Zabezpieczenie na wypadek, gdyby projekt był zupełnie nowy i nienazwany

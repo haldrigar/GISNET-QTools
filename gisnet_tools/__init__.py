@@ -1,4 +1,4 @@
 def classFactory(iface):
 
-    from .GisnetQTools import GisnetQTools
+    from .mainPlugin import GisnetQTools
     return GisnetQTools(iface)

@@ -8,11 +8,11 @@ email=ggogolewski@gisnet.com.pl
 
 about=GISNET QTools is a plugin designed to facilitate data acquisition from Polish government portals.
   
-  Its purpose is to help users quickly retrieve the data they are interested in and redirect them to the appropriate external portal by clicking on the map.
+    Its purpose is to help users quickly retrieve the data they are interested in and redirect them to the appropriate external portal by clicking on the map.
   
-  This is an initial version of the plugin, which will be expanded with additional features.
+    This is an initial version of the plugin, which will be expanded with additional features.
   
-  The first functionality is redirecting from the map to the oblique imagery portal for the city of Gdańsk: https://obliview.brg.gda.pl/
+    The first functionality is redirecting from the map to the oblique imagery portal for the city of Gdańsk: https://obliview.brg.gda.pl/
 
 repository=https://github.com/haldrigar/GISNET-QTools
 tracker=https://github.com/haldrigar/GISNET-QTools/issues
@@ -24,4 +24,4 @@ icon=icons/icon.png
 experimental=False
 
 changelog=
-  0.1 Inicjalizacja wtyczki. Funkcjonalność otwierania strony ze zdjęciami ukośnymi Gdańska we wskazanym punkcie.
+    0.1 - Inicjalizacja wtyczki. Funkcjonalność otwierania strony ze zdjęciami ukośnymi Gdańska we wskazanym punkcie.
