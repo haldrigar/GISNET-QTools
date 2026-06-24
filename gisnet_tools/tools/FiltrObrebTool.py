@@ -2,15 +2,20 @@ from qgis.core import QgsProject # type: ignore
 
 
 def aplikuj_i_odswiez(nazwa_warstwy, kolumna_id, kod_obrebu):
-    layers = QgsProject.instance().mapLayersByName(nazwa_warstwy)
+    
+    layers = QgsProject.instance().mapLayersByName(nazwa_warstwy) # Pobierz warstwę o podanej nazwie z projektu QGIS
+    
     if layers:
-        lyr = layers[0]
+        lyr = layers[0] # Pobierz pierwszą warstwę z listy (jeśli istnieje)
+
+        # Ustaw filtr na warstwę, aby wyświetlała tylko obiekty pasujące do podanego kodu obrębu
         lyr.setSubsetString(f'"{kolumna_id}" LIKE \'%{kod_obrebu}%\'')
     else:
         print(f"Ominięto: {nazwa_warstwy} (brak warstwy w projekcie)")
 
-
+# Funkcja uruchamiająca filtr obrębu
 def uruchom_filtr_obrebu(kod_obrebu, iface):
+    
     # 1. Pobierz aktualne metadane projektu
     metadata = QgsProject.instance().metadata()
 
@@ -54,6 +59,7 @@ def uruchom_filtr_obrebu(kod_obrebu, iface):
 
         # 4. ZOOM DO NOWYCH DZIAŁEK (Zanim odświeżymy widok!)
         dzialki_layers = QgsProject.instance().mapLayersByName('EGB_DzialkaEwidencyjna')
+
         if dzialki_layers:
             lyr_dzialka = dzialki_layers[0]
             zasieg = lyr_dzialka.extent()
@@ -63,6 +69,7 @@ def uruchom_filtr_obrebu(kod_obrebu, iface):
 
         # 5. Wyczyść cache płótna i odśwież widok
         print("Odświeżanie widoku...")
+        
         iface.mapCanvas().clearCache()
         iface.mapCanvas().refreshAllLayers()
 

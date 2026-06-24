@@ -1,3 +1,4 @@
 def classFactory(iface):
-    from .GisnetPlugin import GisnetPlugin
-    return GisnetPlugin(iface)
+
+    from .GisnetQTools import GisnetQTools
+    return GisnetQTools(iface)

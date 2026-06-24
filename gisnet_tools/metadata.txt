@@ -1,18 +1,27 @@
 [general]
 name=GISNET QTools
 qgisMinimumVersion=3.0
-description=Narzędzia firmy GISNET dla QGIS
+description=GISNET tools for QGIS, extending the program's functionality with specialized functions intended for the analysis of data from government portals.
 version=0.1
 author=Grzegorz Gogolewski
 email=ggogolewski@gisnet.com.pl
 
-about=Wtyczka QGIS udostępniająca narzędzia GISNET, w tym szybkie otwieranie portalu ObliView dla wskazanego punktu na mapie.
+about=GISNET QTools is a plugin designed to facilitate data acquisition from Polish government portals.
+  
+  Its purpose is to help users quickly retrieve the data they are interested in and redirect them to the appropriate external portal by clicking on the map.
+  
+  This is an initial version of the plugin, which will be expanded with additional features.
+  
+  The first functionality is redirecting from the map to the oblique imagery portal for the city of Gdańsk: https://obliview.brg.gda.pl/
 
 repository=https://github.com/haldrigar/GISNET-QTools
 tracker=https://github.com/haldrigar/GISNET-QTools/issues
 
 homepage=https://gisnet.com.pl
-tags=qgis, gisnet, obliview, python
+tags=qgis,gisnet,obliview,python
 category=Plugins
-icon=icon.png
+icon=icons/icon.png
 experimental=False
+
+changelog=
+  0.1 Inicjalizacja wtyczki. Funkcjonalność otwierania strony ze zdjęciami ukośnymi Gdańska we wskazanym punkcie.
