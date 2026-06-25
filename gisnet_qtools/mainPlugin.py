@@ -1,13 +1,15 @@
 import os
 
-from qgis.PyQt.QtCore import Qt # type: ignore
-from qgis.PyQt.QtGui import QIcon # type: ignore
-from qgis.PyQt.QtWidgets import QAction, QInputDialog, QMessageBox, QToolBar # type: ignore
+from qgis.PyQt.QtCore import Qt
+from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction, QInputDialog, QMessageBox, QToolBar
 
 from .tools.Obliview import Obliview
 from .tools.FiltrObrebTool import uruchom_filtr_obrebu
 
 from .tools.Config import plugin_config
+
+from .ui.settings import OknoUstawien
 
 class GisnetQTools:
 
@@ -38,10 +40,17 @@ class GisnetQTools:
         )
 
         self.add_button_to_toolbar(
-            ikona_nazwa="filtr_obrebu.png",
+            ikona_nazwa="filter.png",
             tekst="Filtruj obręb",
             metoda_callback=self.filtruj_obreb,
             status_tip="Filtruje warstwy projektu po KOD_OBREBU",
+        )
+
+        self.add_button_to_toolbar(
+            ikona_nazwa="settings.png",
+            tekst="Ustawienia",
+            metoda_callback=self.ustawienia,
+            status_tip="Otwiera okno ustawień wtyczki",
         )
 
     def add_button_to_toolbar(self, ikona_nazwa, tekst, metoda_callback, status_tip=""):
@@ -78,6 +87,14 @@ class GisnetQTools:
 
         self.this_tool = Obliview(self.iface.mapCanvas(), self.iface)
         self.iface.mapCanvas().setMapTool(self.this_tool)
+
+    def ustawienia(self):
+        """Otwiera okno ustawień wtyczki."""
+
+        dialog = OknoUstawien(self.iface.mainWindow())
+
+        #if dialog.exec_():
+        #    self.iface.messageBar().pushMessage("GISNET QTools", "Pomyślnie zaktualizowano konfigurację.", duration=3)
 
     def filtruj_obreb(self):
         """Pyta o kod obrębu, zapamiętuje go i uruchamia filtrację warstw."""

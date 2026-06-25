@@ -1,4 +1,4 @@
-from qgis.core import QgsProject # type: ignore
+from qgis.core import QgsProject
 
 def aplikuj_i_odswiez(nazwa_warstwy, kolumna_id, kod_obrebu):
     
