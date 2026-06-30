@@ -1,22 +1,17 @@
 import webbrowser
 
-from qgis.core import ( # type: ignore
-    QgsCoordinateReferenceSystem,
-    QgsCoordinateTransform,
-    QgsProject,
-)
-from qgis.gui import QgsMapToolEmitPoint # type: ignore
-from qgis.PyQt.QtWidgets import QMessageBox # type: ignore
+from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsProject
+from qgis.gui import QgsMapToolEmitPoint
+from qgis.PyQt.QtWidgets import QMessageBox
 
 from .Config import plugin_config
-
 
 class Obliview(QgsMapToolEmitPoint):
     """Narzędzie mapowe otwierające ObliView dla klikniętego punktu."""
 
     TARGET_CRS = "EPSG:3857"
 
-    def __init__(self, canvas, iface): 
+    def __init__(self, canvas, iface):
         super().__init__(canvas)
         self.canvas = canvas
         self.iface = iface
@@ -48,7 +43,7 @@ class Obliview(QgsMapToolEmitPoint):
     @staticmethod
     def _build_obliview_url(x_coord, y_coord):
         """Buduje adres URL do portalu ObliView."""
-        
-        url = plugin_config.data.get("obliview_url")
 
-        return f"{url}/?r=15&z=20&x={x_coord}&y={y_coord}"
+        url = plugin_config.data.get("obliview_selected_url")
+
+        return f"{url}&z=21&x={x_coord}&y={y_coord}"

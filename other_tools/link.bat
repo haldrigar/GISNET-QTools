@@ -1,0 +1,1 @@
+mklink /D "C:\Users\grzeg\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins\gisnet_tools" "C:\Users\grzeg\source\repos\GISNET-QTools\gisnet_tools"

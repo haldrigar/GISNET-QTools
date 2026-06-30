@@ -1,6 +1,7 @@
 from qgis.core import QgsProject
 
-def aplikuj_i_odswiez(nazwa_warstwy, kolumna_id, kod_obrebu):
+def set_layer_filter(nazwa_warstwy, kolumna_id, kod_obrebu):
+    """Ustawia filtr na warstwę projektu QGIS, aby wyświetlała tylko obiekty pasujące do podanego kodu obrębu."""
     
     layers = QgsProject.instance().mapLayersByName(nazwa_warstwy) # Pobierz warstwę o podanej nazwie z projektu QGIS
     
@@ -13,7 +14,8 @@ def aplikuj_i_odswiez(nazwa_warstwy, kolumna_id, kod_obrebu):
         print(f"Ominięto: {nazwa_warstwy} (brak warstwy w projekcie)")
 
 # Funkcja uruchamiająca filtr obrębu
-def uruchom_filtr_obrebu(kod_obrebu, iface):
+def set_project_filter(kod_obrebu, iface):
+    """Ustawia filtr obrębu na wszystkie warstwy projektu QGIS i zapisuje projekt na dysku."""
     
     # 1. Pobierz aktualne metadane projektu
     metadata = QgsProject.instance().metadata()
@@ -26,35 +28,35 @@ def uruchom_filtr_obrebu(kod_obrebu, iface):
     QgsProject.instance().setMetadata(metadata)
 
     # AKTUALIZACJA WARSTW
-    aplikuj_i_odswiez('EGB_Budynek', 'idBudynku', kod_obrebu)
-    aplikuj_i_odswiez('EGB_DzialkaEwidencyjna', 'idDzialki', kod_obrebu)
-    aplikuj_i_odswiez('EGB_ObrebEwidencyjny', 'idObrebu', kod_obrebu)
-    aplikuj_i_odswiez('EGB_KonturUzytkuGruntowego', 'idUzytku', kod_obrebu)
-    aplikuj_i_odswiez('EGB_KonturKlasyfikacyjny', 'idKonturu', kod_obrebu)
-    aplikuj_i_odswiez('EGB_PunktGraniczny', 'idPunktu', kod_obrebu)
+    set_layer_filter('EGB_Budynek', 'idBudynku', kod_obrebu)
+    set_layer_filter('EGB_DzialkaEwidencyjna', 'idDzialki', kod_obrebu)
+    set_layer_filter('EGB_ObrebEwidencyjny', 'idObrebu', kod_obrebu)
+    set_layer_filter('EGB_KonturUzytkuGruntowego', 'idUzytku', kod_obrebu)
+    set_layer_filter('EGB_KonturKlasyfikacyjny', 'idKonturu', kod_obrebu)
+    set_layer_filter('EGB_PunktGraniczny', 'idPunktu', kod_obrebu)
 
-    aplikuj_i_odswiez('EGB_opisyKARTO', 'teryt', kod_obrebu)
-    aplikuj_i_odswiez('EGB_BlokBudynku_1', 'teryt', kod_obrebu)
-    aplikuj_i_odswiez('EGB_BlokBudynku_2', 'teryt', kod_obrebu)
-    aplikuj_i_odswiez('EGB_ObiektTrwaleZwiazanyZBudynkiem_0', 'teryt', kod_obrebu)
-    aplikuj_i_odswiez('EGB_ObiektTrwaleZwiazanyZBudynkiem_1', 'teryt', kod_obrebu)
-    aplikuj_i_odswiez('EGB_ObiektTrwaleZwiazanyZBudynkiem_2', 'teryt', kod_obrebu)
+    set_layer_filter('EGB_opisyKARTO', 'teryt', kod_obrebu)
+    set_layer_filter('EGB_BlokBudynku_1', 'teryt', kod_obrebu)
+    set_layer_filter('EGB_BlokBudynku_2', 'teryt', kod_obrebu)
+    set_layer_filter('EGB_ObiektTrwaleZwiazanyZBudynkiem_0', 'teryt', kod_obrebu)
+    set_layer_filter('EGB_ObiektTrwaleZwiazanyZBudynkiem_1', 'teryt', kod_obrebu)
+    set_layer_filter('EGB_ObiektTrwaleZwiazanyZBudynkiem_2', 'teryt', kod_obrebu)
 
-    aplikuj_i_odswiez('EGB_PrezentacjaGraficzna', 'teryt', kod_obrebu)
-    aplikuj_i_odswiez('EGB_odnosnik', 'teryt', kod_obrebu)
-    aplikuj_i_odswiez('EGB_poliliniaKierunkowa', 'teryt', kod_obrebu)
+    set_layer_filter('EGB_PrezentacjaGraficzna', 'teryt', kod_obrebu)
+    set_layer_filter('EGB_odnosnik', 'teryt', kod_obrebu)
+    set_layer_filter('EGB_poliliniaKierunkowa', 'teryt', kod_obrebu)
 
     # 1. Pobierz ścieżkę do aktualnego pliku projektu
-    sciezka_pliku = QgsProject.instance().fileName()
+    project_file_name = QgsProject.instance().fileName()
 
-    if sciezka_pliku:
+    if project_file_name:
         # 2. ZAPISZ projekt na dysku
         print("Zapis projektu na dysk...")
         QgsProject.instance().write()
 
         # 3. ODCZYTAJ projekt ponownie z dysku
         print("Wczytywanie projektu...")
-        QgsProject.instance().read(sciezka_pliku)
+        QgsProject.instance().read(project_file_name)
 
         # 4. ZOOM DO NOWYCH DZIAŁEK (Zanim odświeżymy widok!)
         dzialki_layers = QgsProject.instance().mapLayersByName('EGB_DzialkaEwidencyjna')

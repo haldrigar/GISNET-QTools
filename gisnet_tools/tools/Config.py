@@ -3,22 +3,23 @@ import os
 import json
 
 class QToolsConfig:
+
     def __init__(self):
         """Inicjalizuje konfigurację wtyczki GISNET QTools."""
-        
-        self.plugin_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-        self.sciezka_pliku = os.path.join(self.plugin_dir, 'config.json')
-        
-        # Słownik, w którym będą przechowywane bieżące parametry w pamięci RAM
+
+        self.plugin_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) # Ścieżka do katalogu wtyczki
+        self.sciezka_pliku = os.path.join(self.plugin_dir, 'config.json') # Pełna ścieżka do pliku konfiguracyjnego config.json
+
+        # Słownik, w którym będą przechowywane bieżące parametry w pamięci
         self.data = {}
-        
-        # Domyślne wartości
+
+        # Domyślne wartości gdyby plik konfiguracyjny nie istniał lub był uszkodzony
         self.domyslne_ustawienia = {
-            "obliview_url": "https://obliview.brg.gda.pl"
+            "obliview_url": "obliview_selected_url",
+            "obliview_selected": "Gdańsk"
         }
-        
-        # Wczytaj dane od razu przy inicjalizacji modułu
-        self.wczytaj()
+
+        self.wczytaj() # Wczytaj dane od razu przy inicjalizacji modułu
 
     def wczytaj(self):
         """Odczytuje konfigurację z pliku JSON na dysku."""
@@ -36,7 +37,7 @@ class QToolsConfig:
 
     def zapisz(self):
         """Zapisuje bieżący stan słownika data do pliku JSON."""
-        
+
         try:
             with open(self.sciezka_pliku, 'w', encoding='utf-8') as f:
                 json.dump(self.data, f, indent=4, ensure_ascii=False)
@@ -45,5 +46,5 @@ class QToolsConfig:
             print(f"Błąd zapisu konfiguracji GISNET QTools: {e}")
             return False
 
-# KLUCZOWY MOMENT: Tworzymy jedną instancję, którą będą importować inne pliki
+# Tworzymy jedną instancję, którą będą importować inne pliki
 plugin_config = QToolsConfig()
