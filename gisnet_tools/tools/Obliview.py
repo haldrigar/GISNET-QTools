@@ -11,11 +11,14 @@ class Obliview(QgsMapToolEmitPoint):
 
     TARGET_CRS = "EPSG:3857"
 
+    # ===============================================================================================================================================
     def __init__(self, canvas, iface):
+        """Inicjalizuje narzędzie mapowe dla portalu ObliView."""
         super().__init__(canvas)
         self.canvas = canvas
         self.iface = iface
 
+    # ===============================================================================================================================================
     def canvasReleaseEvent(self, event):
         """Obsługuje kliknięcie użytkownika na mapie."""
         try:
@@ -32,6 +35,7 @@ class Obliview(QgsMapToolEmitPoint):
         finally:
             self.iface.actionPan().trigger()
 
+    # ===============================================================================================================================================
     def _transform_point_to_target_crs(self, point):
         """Transformuje punkt z CRS projektu do EPSG:3857 (Web Mercator)."""
 
@@ -40,10 +44,14 @@ class Obliview(QgsMapToolEmitPoint):
         transform = QgsCoordinateTransform(source_crs, target_crs, QgsProject.instance())
         return transform.transform(point)
 
+    # ===============================================================================================================================================
     @staticmethod
     def _build_obliview_url(x_coord, y_coord):
         """Buduje adres URL do portalu ObliView."""
 
-        url = plugin_config.data.get("obliview_selected_url")
+        selected_city = plugin_config.data.get("obliview_selected_city")
 
-        return f"{url}&z=21&x={x_coord}&y={y_coord}"
+        url = plugin_config.obliview_urls_list[selected_city]["url"]
+        lvl_oblique = plugin_config.obliview_urls_list[selected_city]["lvl_oblique"]
+
+        return f"{url}/?d=0&l=-1&r={lvl_oblique}&z=21&x={x_coord}&y={y_coord}"

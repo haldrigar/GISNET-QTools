@@ -11,6 +11,7 @@ from .ui.settings import SettingsDialog
 
 class GisnetQTools:
 
+    # ===============================================================================================================================================
     def __init__(self, iface): 
         """Klasa reprezentująca wtyczkę GISNET dla QGIS."""
 
@@ -25,6 +26,7 @@ class GisnetQTools:
         
         self.this_tool = None # Narzędzie mapy (QgsMapTool) używane przez wtyczkę
 
+    # ===============================================================================================================================================
     def initGui(self): 
         """ Metoda initGui jest wywoływana podczas inicjalizacji wtyczki i służy do tworzenia paska narzędzi oraz dodawania przycisków do tego paska. """
         
@@ -41,12 +43,12 @@ class GisnetQTools:
             status_tip="Uruchom portal ObliView we wskazanym miejscu",
         )
 
-        # self.add_button_to_toolbar(
-        #     ikona_nazwa="filter.png",
-        #     tekst="Filtruj obręb",
-        #     metoda_callback=self.toolbar_set_project_filter_click,
-        #     status_tip="Filtruje warstwy projektu po KOD_OBREBU",
-        # )
+        self.add_button_to_toolbar(
+            ikona_nazwa="filter.png",
+            tekst="Filtruj obręb",
+            metoda_callback=self.toolbar_set_project_filter_click,
+            status_tip="Filtruje warstwy projektu po KOD_OBREBU",
+        )
 
         self.add_button_to_toolbar(
             ikona_nazwa="settings.png",
@@ -55,50 +57,14 @@ class GisnetQTools:
             status_tip="Otwiera okno ustawień wtyczki",
         )
 
-    def add_button_to_toolbar(self, ikona_nazwa, tekst, metoda_callback, status_tip=""):
-        """Dodaje przycisk do paska narzędzi wtyczki."""
-
-        sciezka_ikony = os.path.join(self.plugin_dir, "icons", ikona_nazwa)
-        icon = QIcon(sciezka_ikony) if os.path.exists(sciezka_ikony) else QIcon()
-
-        akcja = QAction(icon, tekst, self.iface.mainWindow())
-        akcja.setStatusTip(status_tip)
-        akcja.triggered.connect(metoda_callback)
-
-        self.toolbar.addAction(akcja) # Dodajemy akcję do paska narzędzi
-        self.actions.append(akcja) # Dodajemy akcję do listy akcji wtyczki, aby móc je później usunąć podczas wyłączania wtyczki
-        
-    def unload(self):
-        """Czyści akcje i pasek narzędzi podczas wyłączania wtyczki."""
-
-        if self.toolbar:
-            for action in self.actions:
-                self.toolbar.removeAction(action)
-
-            if self.toolbar_created_by_plugin:
-                self.iface.mainWindow().removeToolBar(self.toolbar)
-                self.toolbar.deleteLater()
-
-        self.actions.clear()
-        self.toolbar = None
-        self.toolbar_created_by_plugin = False
-        self.this_tool = None
-
+    # ===============================================================================================================================================
     def toolbar_obliview_click(self):
         """Uruchamia dedykowane narzędzie wyboru punktu na mapie."""
 
         self.this_tool = Obliview(self.iface.mapCanvas(), self.iface)
         self.iface.mapCanvas().setMapTool(self.this_tool)
 
-    def toolbar_settings_click(self):
-        """Otwiera okno ustawień wtyczki."""
-
-        dialog = SettingsDialog(self.iface.mainWindow())
-
-        if dialog.exec_(): # Zamyka okno dialogowe z wynikiem QDialog.Accepted
-            self.iface.messageBar().pushMessage("GISNET QTools", "Pomyślnie zaktualizowano konfigurację.", duration=3)
-
-
+    # ===============================================================================================================================================
     def toolbar_set_project_filter_click(self):
         """Pyta o kod obrębu, zapamiętuje go i uruchamia filtrację warstw."""
 
@@ -118,9 +84,49 @@ class GisnetQTools:
 
         # Zapamiętuje w konfiguracji wtyczki ostatnio używany kod obrębu, aby przy następnym uruchomieniu funkcji był on podpowiadany jako wartość domyślna.
         plugin_config.data["obreb"] = kod_obrebu # Zapisuje kod obrębu w konfiguracji wtyczki
-        plugin_config.zapisz()
+        plugin_config.save_config()
 
         try:
             set_project_filter(kod_obrebu, self.iface)
         except Exception as e:
             QMessageBox.critical(self.iface.mainWindow(), "Błąd filtrowania", str(e))
+
+    # ===============================================================================================================================================
+    def toolbar_settings_click(self):
+        """Otwiera okno ustawień wtyczki."""
+
+        dialog = SettingsDialog(self.iface.mainWindow())
+
+        if dialog.exec_(): # Zamyka okno dialogowe z wynikiem QDialog.Accepted
+            self.iface.messageBar().pushMessage("GISNET QTools", "Pomyślnie zaktualizowano konfigurację.", duration=3)
+
+    # ===============================================================================================================================================
+    def add_button_to_toolbar(self, ikona_nazwa, tekst, metoda_callback, status_tip=""):
+        """Dodaje przycisk do paska narzędzi wtyczki."""
+
+        sciezka_ikony = os.path.join(self.plugin_dir, "icons", ikona_nazwa)
+        icon = QIcon(sciezka_ikony) if os.path.exists(sciezka_ikony) else QIcon()
+
+        akcja = QAction(icon, tekst, self.iface.mainWindow())
+        akcja.setStatusTip(status_tip)
+        akcja.triggered.connect(metoda_callback)
+
+        self.toolbar.addAction(akcja) # Dodajemy akcję do paska narzędzi
+        self.actions.append(akcja) # Dodajemy akcję do listy akcji wtyczki, aby móc je później usunąć podczas wyłączania wtyczki
+
+    # ===============================================================================================================================================
+    def unload(self):
+        """Czyści akcje i pasek narzędzi podczas wyłączania wtyczki."""
+
+        if self.toolbar:
+            for action in self.actions:
+                self.toolbar.removeAction(action)
+
+            if self.toolbar_created_by_plugin:
+                self.iface.mainWindow().removeToolBar(self.toolbar)
+                self.toolbar.deleteLater()
+
+        self.actions.clear()
+        self.toolbar = None
+        self.toolbar_created_by_plugin = False
+        self.this_tool = None

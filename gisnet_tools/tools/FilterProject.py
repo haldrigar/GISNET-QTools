@@ -1,5 +1,6 @@
 from qgis.core import QgsProject
 
+# ===================================================================================================================================================
 def set_layer_filter(nazwa_warstwy, kolumna_id, kod_obrebu):
     """Ustawia filtr na warstwę projektu QGIS, aby wyświetlała tylko obiekty pasujące do podanego kodu obrębu."""
     
@@ -13,6 +14,7 @@ def set_layer_filter(nazwa_warstwy, kolumna_id, kod_obrebu):
     else:
         print(f"Ominięto: {nazwa_warstwy} (brak warstwy w projekcie)")
 
+# ===================================================================================================================================================
 # Funkcja uruchamiająca filtr obrębu
 def set_project_filter(kod_obrebu, iface):
     """Ustawia filtr obrębu na wszystkie warstwy projektu QGIS i zapisuje projekt na dysku."""
