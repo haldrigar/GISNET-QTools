@@ -2,7 +2,7 @@
 name=GISNET QTools
 qgisMinimumVersion=3.0
 description=GISNET tools for QGIS, extending the program's functionality with specialized functions intended for the analysis of data from government portals.
-version=0.2
+version=0.2.1
 author=Grzegorz Gogolewski
 email=ggogolewski@gisnet.com.pl
 
@@ -24,5 +24,6 @@ icon=icons/icon.png
 experimental=False
 
 changelog=
+    0.2.1 - Poprawki w kodzie, dodanie filtorwania obrębów (opcja dla Gdańska), obliview domyślnie na ukośne
     0.2 - Dodanie okna konfiguracji wtyczki. Możliwość wyboru miast Gdańska lub Gdyni dla ObliView
     0.1 - Inicjalizacja wtyczki. Funkcjonalność otwierania strony ze zdjęciami ukośnymi Gdańska we wskazanym punkcie.

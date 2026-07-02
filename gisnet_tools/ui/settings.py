@@ -1,9 +1,7 @@
 import os
 
 from qgis.PyQt import uic
-from qgis.PyQt.QtWidgets import QDialog, QMessageBox, QCheckBox
-from qgis.core import Qgis
-from qgis.PyQt.QtWidgets import QButtonGroup
+from qgis.PyQt.QtWidgets import QDialog
 
 from ..tools.Config import plugin_config
 
