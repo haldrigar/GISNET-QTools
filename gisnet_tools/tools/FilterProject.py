@@ -59,6 +59,7 @@ def set_project_filter(kod_obrebu, iface):
         set_layer_filter('EGB_PunktGraniczny', 'idPunktu', kod_obrebu)
 
         set_layer_filter('EGB_opisyKARTO', 'teryt', kod_obrebu)
+        set_layer_filter('EGB_AdresNieruchomosci', 'teryt', kod_obrebu)
         set_layer_filter('EGB_BlokBudynku_1', 'teryt', kod_obrebu)
         set_layer_filter('EGB_BlokBudynku_2', 'teryt', kod_obrebu)
         set_layer_filter('EGB_ObiektTrwaleZwiazanyZBudynkiem_0', 'teryt', kod_obrebu)

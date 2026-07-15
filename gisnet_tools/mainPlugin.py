@@ -32,7 +32,11 @@ class GisnetQTools:
         
         self.toolbar = QToolBar("GISNET", self.iface.mainWindow()) # Tworzymy nowy pasek narzędzi o nazwie "GISNET" i przypisujemy go do głównego okna QGIS
 
-        self.iface.mainWindow().addToolBar(Qt.TopToolBarArea, self.toolbar) # Dodajemy pasek narzędzi do głównego okna QGIS w górnej części interfejsu (Qt.TopToolBarArea)
+        #self.iface.mainWindow().addToolBar(Qt.TopToolBarArea, self.toolbar) # Dodajemy pasek narzędzi do głównego okna QGIS w górnej części interfejsu (Qt.TopToolBarArea)
+
+        # W Qt6 / PyQt6 należy odwoływać się do obszaru paska poprzez Qt.ToolBarArea.TopToolBarArea
+        self.iface.mainWindow().addToolBar(Qt.ToolBarArea.TopToolBarArea, self.toolbar) 
+
         self.toolbar_created_by_plugin = True # Flaga informująca, że pasek narzędzi został utworzony przez wtyczkę
 
         # Dodajemy przyciski do paska narzędzi
@@ -97,7 +101,8 @@ class GisnetQTools:
 
         dialog = SettingsDialog(self.iface.mainWindow())
 
-        if dialog.exec_(): # Zamyka okno dialogowe z wynikiem QDialog.Accepted
+        # W Qt6 / PyQt6 usunięto podkreślenie na końcu nazwy metody - używamy exec() zamiast exec_()
+        if dialog.exec(): # Zamyka okno dialogowe z wynikiem QDialog.Accepted
             self.iface.messageBar().pushMessage("GISNET QTools", "Pomyślnie zaktualizowano konfigurację.", duration=3)
 
     # ===============================================================================================================================================
