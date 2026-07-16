@@ -56,15 +56,15 @@ class Obliview(QgsMapToolEmitPoint):
         # pobierz typ wyświetlania (orto, oblique, 3d) z konfiguracji
         obliview_type = plugin_config.data.get("obliview_type")
 
-        match obliview_type:
-            case "radioButtonOrto":
-                layer = plugin_config.obliview_urls_list[selected_city]["lvl_orto"]
-                zoom = 21
-            case "radioButtonOblique":
-                layer = plugin_config.obliview_urls_list[selected_city]["lvl_oblique"]
-                zoom = 21
-            case "radioButton3D":
-                layer = plugin_config.obliview_urls_list[selected_city]["lvl_3d"]
-                zoom = 19
+        # Kompatybilność QGIS 3/4: zamiast match/case (Python 3.10+) używamy if/elif
+        if obliview_type == "radioButtonOrto":
+            layer = plugin_config.obliview_urls_list[selected_city]["lvl_orto"]
+            zoom = 21
+        elif obliview_type == "radioButtonOblique":
+            layer = plugin_config.obliview_urls_list[selected_city]["lvl_oblique"]
+            zoom = 21
+        elif obliview_type == "radioButton3D":
+            layer = plugin_config.obliview_urls_list[selected_city]["lvl_3d"]
+            zoom = 19
 
         return f"{url}/?d=0&l=-1&r={layer}&z={zoom}&x={x_coord}&y={y_coord}"

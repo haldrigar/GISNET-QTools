@@ -1,4 +1,4 @@
-from qgis.core import QgsProject, QgsMapLayerType
+from qgis.core import Qgis, QgsMessageLog, QgsProject, QgsMapLayerType
 from qgis.PyQt.QtWidgets import QMessageBox
 
 # ===================================================================================================================================================
@@ -71,11 +71,11 @@ def set_project_filter(kod_obrebu, iface):
         set_layer_filter('EGB_poliliniaKierunkowa', 'teryt', kod_obrebu)
 
         # 4. ZAPISZ projekt na dysku
-        print("Zapis projektu na dysk...")
+        QgsMessageLog.logMessage("Zapis projektu na dysk...", "GISNET QTools", Qgis.Info)
         QgsProject.instance().write()
 
         # 5. ODCZYTAJ projekt ponownie z dysku
-        print("Wczytywanie projektu...")
+        QgsMessageLog.logMessage("Wczytywanie projektu...", "GISNET QTools", Qgis.Info)
         QgsProject.instance().read(project_file_name)
 
         # 6. ZOOM DO NOWYCH DZIAŁEK (Zanim odświeżymy widok!)
@@ -88,12 +88,14 @@ def set_project_filter(kod_obrebu, iface):
             if not zasieg.isEmpty():
                 iface.mapCanvas().setExtent(zasieg)
 
-        print(f"Wczytano projekt dla obrębu {kod_obrebu}!")
+        QgsMessageLog.logMessage(f"Wczytano projekt dla obrębu {kod_obrebu}!", "GISNET QTools", Qgis.Info)
+
+        iface.messageBar().pushMessage("Info", f"Wczytano projekt dla obrębu {kod_obrebu}!", level=Qgis.Info, duration=3)
 
     else:
         # Zabezpieczenie na wypadek, gdyby projekt był zupełnie nowy i nienazwany
-        print("BŁĄD: Projekt nie jest jeszcze zapisany na dysku (jest bez nazwy).")
-        print("Zapisz go ręcznie chociaż raz (Projekt -> Zapisz jako...), aby skrypt znał jego ścieżkę.")
+        QgsMessageLog.logMessage("BŁĄD: Projekt nie jest jeszcze zapisany na dysku (jest bez nazwy).", "GISNET QTools", Qgis.Critical)
+        QgsMessageLog.logMessage("Zapisz go ręcznie chociaż raz (Projekt -> Zapisz jako...), aby skrypt znał jego ścieżkę.", "GISNET QTools", Qgis.Info)
 
 # ===================================================================================================================================================
 def set_layer_filter(nazwa_warstwy, kolumna_id, kod_obrebu):
@@ -107,4 +109,4 @@ def set_layer_filter(nazwa_warstwy, kolumna_id, kod_obrebu):
         # Ustaw filtr na warstwę, aby wyświetlała tylko obiekty pasujące do podanego kodu obrębu
         lyr.setSubsetString(f'"{kolumna_id}" LIKE \'%{kod_obrebu}%\'')
     else:
-        print(f"Ominięto: {nazwa_warstwy} (brak warstwy w projekcie)")
+        QgsMessageLog.logMessage(f"Ominięto: {nazwa_warstwy} (brak warstwy w projekcie)")

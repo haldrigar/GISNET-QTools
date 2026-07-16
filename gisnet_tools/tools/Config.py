@@ -1,6 +1,8 @@
 import os
 import json
 
+from qgis.core import Qgis, QgsMessageLog
+
 class QToolsConfig:
 
     # ===============================================================================================================================================
@@ -74,7 +76,7 @@ class QToolsConfig:
                 json.dump(self.data, f, indent=4, ensure_ascii=False)
             return True
         except Exception as e:
-            print(f"Błąd zapisu konfiguracji GISNET QTools: {e}")
+            QgsMessageLog.logMessage(f"Błąd zapisu konfiguracji GISNET QTools: {e}", "GISNET QTools", Qgis.Critical)
             return False
 
  # ==================================================================================================================================================

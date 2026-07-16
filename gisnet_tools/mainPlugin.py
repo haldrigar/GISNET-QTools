@@ -34,8 +34,15 @@ class GisnetQTools:
 
         #self.iface.mainWindow().addToolBar(Qt.TopToolBarArea, self.toolbar) # Dodajemy pasek narzędzi do głównego okna QGIS w górnej części interfejsu (Qt.TopToolBarArea)
 
-        # W Qt6 / PyQt6 należy odwoływać się do obszaru paska poprzez Qt.ToolBarArea.TopToolBarArea
-        self.iface.mainWindow().addToolBar(Qt.ToolBarArea.TopToolBarArea, self.toolbar) 
+        # Kompatybilność Qt5/Qt6 (QGIS 3/4):
+        # - Qt6: Qt.ToolBarArea.TopToolBarArea
+        # - Qt5: Qt.TopToolBarArea
+        try:
+            toolbar_area = Qt.ToolBarArea.TopToolBarArea
+        except AttributeError:
+            toolbar_area = Qt.TopToolBarArea
+
+        self.iface.mainWindow().addToolBar(toolbar_area, self.toolbar)
 
         self.toolbar_created_by_plugin = True # Flaga informująca, że pasek narzędzi został utworzony przez wtyczkę
 
