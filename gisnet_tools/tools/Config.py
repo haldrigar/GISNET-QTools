@@ -76,7 +76,7 @@ class QToolsConfig:
                 json.dump(self.data, f, indent=4, ensure_ascii=False)
             return True
         except Exception as e:
-            QgsMessageLog.logMessage(f"Błąd zapisu konfiguracji GISNET QTools: {e}", "GISNET QTools", Qgis.Critical)
+            QgsMessageLog.logMessage(f"Błąd zapisu konfiguracji GISNET QTools: {e}", "GISNET QTools", level=Qgis.MessageLevel.Critical)
             return False
 
  # ==================================================================================================================================================

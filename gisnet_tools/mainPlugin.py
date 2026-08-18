@@ -37,10 +37,8 @@ class GisnetQTools:
         # Kompatybilność Qt5/Qt6 (QGIS 3/4):
         # - Qt6: Qt.ToolBarArea.TopToolBarArea
         # - Qt5: Qt.TopToolBarArea
-        try:
-            toolbar_area = Qt.ToolBarArea.TopToolBarArea
-        except AttributeError:
-            toolbar_area = Qt.TopToolBarArea
+
+        toolbar_area = Qt.ToolBarArea.TopToolBarArea
 
         self.iface.mainWindow().addToolBar(toolbar_area, self.toolbar)
 

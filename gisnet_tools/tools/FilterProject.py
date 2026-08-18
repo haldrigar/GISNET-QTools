@@ -69,13 +69,15 @@ def set_project_filter(kod_obrebu, iface):
         set_layer_filter('EGB_PrezentacjaGraficzna', 'teryt', kod_obrebu)
         set_layer_filter('EGB_odnosnik', 'teryt', kod_obrebu)
         set_layer_filter('EGB_poliliniaKierunkowa', 'teryt', kod_obrebu)
+        
+        set_layer_filter('OT_BudynekNiewykazanyWEGIB', 'teryt', kod_obrebu)
 
         # 4. ZAPISZ projekt na dysku
-        QgsMessageLog.logMessage("Zapis projektu na dysk...", "GISNET QTools", Qgis.Info)
+        QgsMessageLog.logMessage("Zapis projektu na dysk...", "GISNET QTools", level=Qgis.MessageLevel.Info)
         QgsProject.instance().write()
 
         # 5. ODCZYTAJ projekt ponownie z dysku
-        QgsMessageLog.logMessage("Wczytywanie projektu...", "GISNET QTools", Qgis.Info)
+        QgsMessageLog.logMessage("Wczytywanie projektu...", "GISNET QTools", level=Qgis.MessageLevel.Info)
         QgsProject.instance().read(project_file_name)
 
         # 6. ZOOM DO NOWYCH DZIAŁEK (Zanim odświeżymy widok!)
@@ -88,14 +90,14 @@ def set_project_filter(kod_obrebu, iface):
             if not zasieg.isEmpty():
                 iface.mapCanvas().setExtent(zasieg)
 
-        QgsMessageLog.logMessage(f"Wczytano projekt dla obrębu {kod_obrebu}!", "GISNET QTools", Qgis.Info)
+        QgsMessageLog.logMessage(f"Wczytano projekt dla obrębu {kod_obrebu}!", "GISNET QTools", level=Qgis.MessageLevel.Info)
 
-        iface.messageBar().pushMessage("Info", f"Wczytano projekt dla obrębu {kod_obrebu}!", level=Qgis.Info, duration=3)
+        iface.messageBar().pushMessage("Info", f"Wczytano projekt dla obrębu {kod_obrebu}!", level=Qgis.MessageLevel.Info, duration=3)
 
     else:
         # Zabezpieczenie na wypadek, gdyby projekt był zupełnie nowy i nienazwany
-        QgsMessageLog.logMessage("BŁĄD: Projekt nie jest jeszcze zapisany na dysku (jest bez nazwy).", "GISNET QTools", Qgis.Critical)
-        QgsMessageLog.logMessage("Zapisz go ręcznie chociaż raz (Projekt -> Zapisz jako...), aby skrypt znał jego ścieżkę.", "GISNET QTools", Qgis.Info)
+        QgsMessageLog.logMessage("BŁĄD: Projekt nie jest jeszcze zapisany na dysku (jest bez nazwy).", "GISNET QTools", level=Qgis.MessageLevel.Critical)
+        QgsMessageLog.logMessage("Zapisz go ręcznie chociaż raz (Projekt -> Zapisz jako...), aby skrypt znał jego ścieżkę.", "GISNET QTools", level=Qgis.MessageLevel.Info)
 
 # ===================================================================================================================================================
 def set_layer_filter(nazwa_warstwy, kolumna_id, kod_obrebu):
@@ -109,4 +111,4 @@ def set_layer_filter(nazwa_warstwy, kolumna_id, kod_obrebu):
         # Ustaw filtr na warstwę, aby wyświetlała tylko obiekty pasujące do podanego kodu obrębu
         lyr.setSubsetString(f'"{kolumna_id}" LIKE \'%{kod_obrebu}%\'')
     else:
-        QgsMessageLog.logMessage(f"Ominięto: {nazwa_warstwy} (brak warstwy w projekcie)")
+        QgsMessageLog.logMessage(f"Ominięto: {nazwa_warstwy} (brak warstwy w projekcie)", "GISNET QTools", level=Qgis.MessageLevel.Warning)
