@@ -19,7 +19,11 @@ class QToolsConfig:
         # Domyślne wartości gdyby plik konfiguracyjny nie istniał lub był uszkodzony
         self.default_settings = {
             "obliview_selected_city": "Gdańsk",
-            "obreb":"226101_1.0001"
+            "obreb":"226101_1.0001",
+            "obliview_type": "radioButtonOblique",
+            "clipboard_monitoring_enabled": False,
+            "clipboard_zoom_enabled": False,
+            "clipboard_zoom_scale": 500
         }
 
         self.read_config() # Wczytaj dane od razu przy inicjalizacji modułu
@@ -37,21 +41,21 @@ class QToolsConfig:
             with open(self.config_file_name, 'r', encoding='utf-8') as f:
                 self.data = json.load(f)
         except Exception:
-            self.data = self.default_settings.copy()        
+            self.data = self.default_settings.copy()
 
         # -------------------------------------------------------------------------------------------------------------------------------------------
         obliview_config_file_name = os.path.join(self.plugin_dir, 'tools', 'Obliview.cfg') # Pełna ścieżka do pliku konfiguracyjnego Obliview.cfg
 
         # Wczytaj konfigurację dla portalu ObliView z pliku Obliview.cfg
         with open(obliview_config_file_name, 'r', encoding='utf-8') as f:
-            
+
             for linia in f:
                 linia = linia.strip()
 
                 # pomiń puste i komentarze
                 if not linia or linia.startswith('#'):
                     continue
-                
+
                 parts = linia.split(';')
 
                 miasto = parts[0].strip()

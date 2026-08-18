@@ -1,8 +1,11 @@
 import os
+import re
 
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QInputDialog, QMessageBox, QToolBar
+from qgis.PyQt.QtWidgets import QApplication, QAction, QInputDialog, QMessageBox, QToolBar
+
+from qgis.core import (QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsPointXY, QgsProject)
 
 from .tools.Obliview import Obliview
 from .tools.FilterProject import set_project_filter
@@ -25,6 +28,10 @@ class GisnetQTools:
         self.actions = [] # Lista akcji dodanych do paska narzędzi
 
         self.this_tool = None # Narzędzie mapy (QgsMapTool) używane przez wtyczkę
+
+        # monitor schowka
+        self.clipboard = QApplication.clipboard()
+        self.clipboard.dataChanged.connect(self.on_clipboard_changed)
 
     # ===============================================================================================================================================
     def initGui(self):
@@ -123,6 +130,83 @@ class GisnetQTools:
 
         self.toolbar.addAction(akcja) # Dodajemy akcję do paska narzędzi
         self.actions.append(akcja) # Dodajemy akcję do listy akcji wtyczki, aby móc je później usunąć podczas wyłączania wtyczki
+
+    # ===============================================================================================================================================
+    def on_clipboard_changed(self):
+        """Obsługuje zmiany w schowku i próbuje wykryć współrzędne."""
+
+        try:
+            if not plugin_config.data.get("clipboard_monitoring_enabled", True):
+                return
+
+            text = self.clipboard.text()
+            if not text:
+                return
+
+            point = self._parse_coordinates_from_clipboard(text)
+            if point is None:
+                return
+
+            canvas = self.iface.mapCanvas()
+            canvas.setCenter(point)
+
+            if plugin_config.data.get("clipboard_zoom_enabled", True):
+                zoom_scale = int(plugin_config.data.get("clipboard_zoom_scale"))
+                canvas.zoomScale(zoom_scale)
+
+            canvas.refresh()
+
+        except Exception:
+            pass
+
+    # ===============================================================================================================================================
+    def _parse_coordinates_from_clipboard(self, text):
+        """
+        Parsuje tekst z schowka:
+        - '19.12345 51.23456'
+        - '19.12345,51.23456'
+        - 'x=19.12345 y=51.23456'
+        """
+        text = text.strip()
+        if not text:
+            return None
+
+        numbers = re.findall(r"[-+]?\d+(?:[.,]\d+)?", text)
+
+        if len(numbers) < 2:
+            return None
+
+        try:
+            x = float(numbers[0].replace(",", "."))
+            y = float(numbers[1].replace(",", "."))
+        except ValueError:
+            return None
+
+        return self._transform_to_project_crs(y, x)
+
+    # ===============================================================================================================================================
+    def _transform_to_project_crs(self, x, y):
+        """Przekształca współrzędne do aktywnego CRS projektu."""
+
+        if abs(x) <= 180 and abs(y) <= 90:
+            source_crs = QgsCoordinateReferenceSystem("EPSG:4326")
+        else:
+            source_crs = QgsProject.instance().crs()
+
+        point = QgsPointXY(x, y)
+
+        project_crs = QgsProject.instance().crs()
+
+        if source_crs != project_crs:
+            transform = QgsCoordinateTransform(
+                source_crs,
+                project_crs,
+                QgsProject.instance()
+            )
+
+            point = transform.transform(point)
+
+        return point
 
     # ===============================================================================================================================================
     def unload(self):
