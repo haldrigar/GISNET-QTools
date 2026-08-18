@@ -12,7 +12,7 @@
             "pathMappings": [
                 {
                     "localRoot": "${workspaceFolder}/gisnet_tools",
-                    "remoteRoot": "C:/Users/grzeg/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins/gisnet_tools"
+                    "remoteRoot": "C:/Users/grzegorz/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins/gisnet_tools"
                 }
             ],
             "justMyCode": true

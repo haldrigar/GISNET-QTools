@@ -1,18 +1,14 @@
 {
-    "python-envs.pythonProjects": [
-        {
-            "path": ".",
-            "envManager": "ms-python.python:system",
-            "packageManager": "ms-python.python:pip"
-        }
-    ],
     "python.analysis.extraPaths": [
-        "c:/Users/grzeg/AppData/Local/Programs/QGIS/apps/qgis-ltr/python",
-        "c:/Users/grzeg/AppData/Local/Programs/QGIS/apps/qgis-ltr/python/plugins",
-        "c:/Users/grzeg/AppData/Local/Programs/QGIS/apps/Python312/Lib/site-packages"
+        "C:/Users/grzegorz/AppData/Local/Programs/OSGeo4W/apps",
+        "C:/Users/grzegorz/AppData/Local/Programs/OSGeo4W/apps/qgis/python",
+        "C:/Users/grzegorz/AppData/Local/Programs/OSGeo4W/apps/qgis/python/plugins",
+        "C:/Users/grzegorz/AppData/Local/Programs/OSGeo4W/apps/Python312/Lib/site-packages"
     ],
     "python.autoComplete.extraPaths": [
-        "c:/Users/grzeg/AppData/Local/Programs/QGIS/apps/qgis-ltr/python",
-        "c:/Users/grzeg/AppData/Local/Programs/QGIS/apps/qgis-ltr/python/plugins"
+        "C:/Users/grzegorz/AppData/Local/Programs/OSGeo4W/apps",
+        "C:/Users/grzegorz/AppData/Local/Programs/OSGeo4W/apps/qgis/python",
+        "C:/Users/grzegorz/AppData/Local/Programs/OSGeo4W/apps/qgis/python/plugins",
+        "C:/Users/grzegorz/AppData/Local/Programs/OSGeo4W/apps/Python312/Lib/site-packages"
     ]
 }

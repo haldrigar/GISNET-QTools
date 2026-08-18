@@ -12,7 +12,7 @@ from .ui.settings import SettingsDialog
 class GisnetQTools:
 
     # ===============================================================================================================================================
-    def __init__(self, iface): 
+    def __init__(self, iface):
         """Klasa reprezentująca wtyczkę GISNET dla QGIS."""
 
         # save reference to the QGIS interface
@@ -23,13 +23,13 @@ class GisnetQTools:
         self.toolbar = None # QToolBar
         self.toolbar_created_by_plugin = False # Flaga informująca, czy pasek narzędzi został utworzony przez wtyczkę
         self.actions = [] # Lista akcji dodanych do paska narzędzi
-        
+
         self.this_tool = None # Narzędzie mapy (QgsMapTool) używane przez wtyczkę
 
     # ===============================================================================================================================================
-    def initGui(self): 
+    def initGui(self):
         """ Metoda initGui jest wywoływana podczas inicjalizacji wtyczki i służy do tworzenia paska narzędzi oraz dodawania przycisków do tego paska. """
-        
+
         self.toolbar = QToolBar("GISNET", self.iface.mainWindow()) # Tworzymy nowy pasek narzędzi o nazwie "GISNET" i przypisujemy go do głównego okna QGIS
 
         #self.iface.mainWindow().addToolBar(Qt.TopToolBarArea, self.toolbar) # Dodajemy pasek narzędzi do głównego okna QGIS w górnej części interfejsu (Qt.TopToolBarArea)
@@ -80,7 +80,7 @@ class GisnetQTools:
         last_obreb = plugin_config.data.get("obreb") # Pobiera ostatnio używany kod obrębu z konfiguracji wtyczki
 
         # Wyświetla okno dialogowe z polem tekstowym, w którym użytkownik może wpisać kod obrębu. Wartość domyślna to ostatnio używany kod obrębu.
-        kod_obrebu, ok = QInputDialog.getText(self.iface.mainWindow(), "Filtruj po obrębie", "Podaj kod obrębu (KOD_OBREBU):", text=last_obreb) 
+        kod_obrebu, ok = QInputDialog.getText(self.iface.mainWindow(), "Filtruj po obrębie", "Podaj kod obrębu (KOD_OBREBU):", text=last_obreb)
 
         if not ok: # Użytkownik anulował wprowadzanie danych, więc kończymy działanie funkcji
             return
