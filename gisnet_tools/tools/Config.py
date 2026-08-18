@@ -32,44 +32,55 @@ class QToolsConfig:
     def read_config(self):
         """Odczytuje konfigurację z pliku JSON na dysku."""
 
-        if not os.path.exists(self.config_file_name):
-            self.data = self.default_settings.copy()
-            self.save_config()
-            return
-
-        try:
-            with open(self.config_file_name, 'r', encoding='utf-8') as f:
-                self.data = json.load(f)
-        except Exception:
-            self.data = self.default_settings.copy()
+        # 1. najpierw zainicjalizuj domyślne ustawienia
+        self.data = self.default_settings.copy()
 
         # -------------------------------------------------------------------------------------------------------------------------------------------
+        # 2. zawsze wczytaj listę miast z Obliview.cfg
+
         obliview_config_file_name = os.path.join(self.plugin_dir, 'tools', 'Obliview.cfg') # Pełna ścieżka do pliku konfiguracyjnego Obliview.cfg
+        self.obliview_urls_list = {}
 
         # Wczytaj konfigurację dla portalu ObliView z pliku Obliview.cfg
-        with open(obliview_config_file_name, 'r', encoding='utf-8') as f:
+        try:
+            with open(obliview_config_file_name, 'r', encoding='utf-8') as f:
+                for linia in f:
+                    linia = linia.strip()
+                    if not linia or linia.startswith('#'):
+                        continue
 
-            for linia in f:
-                linia = linia.strip()
+                    parts = linia.split(';')
+                    if len(parts) < 5:
+                        continue
 
-                # pomiń puste i komentarze
-                if not linia or linia.startswith('#'):
-                    continue
+                    miasto = parts[0].strip()
+                    url = parts[1].strip()
+                    lvl_orto = parts[2].strip()
+                    lvl_oblique = parts[3].strip()
+                    lvl_3d = parts[4].strip()
 
-                parts = linia.split(';')
+                    self.obliview_urls_list[miasto] = {
+                        "url": url,
+                        "lvl_orto": lvl_orto,
+                        "lvl_oblique": lvl_oblique,
+                        "lvl_3d": lvl_3d
+                    }
+        except Exception as e:
+            QgsMessageLog.logMessage(f"Błąd wczytania konfiguracji ObliView: {e}", "GISNET QTools", level=Qgis.MessageLevel.Warning)
 
-                miasto = parts[0].strip()
-                url = parts[1].strip()
-                lvl_orto = parts[2].strip()
-                lvl_oblique = parts[3].strip()
-                lvl_3d = parts[4].strip()
+        # 3. jeśli config.json istnieje, nadpisz ustawienia użytkownika
+        if os.path.exists(self.config_file_name):
+            try:
+                with open(self.config_file_name, 'r', encoding='utf-8') as f:
+                    saved_data = json.load(f)
+                    if isinstance(saved_data, dict):
+                        self.data.update(saved_data)
+            except Exception:
+                self.data = self.default_settings.copy()
 
-                self.obliview_urls_list[miasto] = {
-                    "url": url,
-                    "lvl_orto": lvl_orto,
-                    "lvl_oblique": lvl_oblique,
-                    "lvl_3d": lvl_3d
-                }
+        # 4. uzupełnij brakujące klucze
+        for key, value in self.default_settings.items():
+            self.data.setdefault(key, value)
 
     # ===============================================================================================================================================
     def save_config(self):
