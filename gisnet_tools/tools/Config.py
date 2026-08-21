@@ -23,7 +23,8 @@ class QToolsConfig:
             "obliview_type": "radioButtonOblique",
             "clipboard_monitoring_enabled": False,
             "clipboard_zoom_enabled": False,
-            "clipboard_zoom_scale": 500
+            "clipboard_zoom_scale": 500,
+            "gdansk_filter_enabled": False
         }
 
         self.read_config() # Wczytaj dane od razu przy inicjalizacji modułu

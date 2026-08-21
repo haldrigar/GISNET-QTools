@@ -24,7 +24,11 @@ class SettingsDialog(QDialog, FORM_CLASS):
 
         obliview_selected_city = plugin_config.data.get("obliview_selected_city") # Pobiera z konfiguracji wybrane miasto dla ObliView
 
-        self.comboBoxObliView.setCurrentText(obliview_selected_city) # Ustawia w comboBoxie aktualnie wybrane miasto na podstawie konfiguracji
+        # Ustawia w comboBoxie aktualnie wybrane miasto na podstawie konfiguracji
+        if obliview_selected_city in plugin_config.obliview_urls_list:
+            self.comboBoxObliView.setCurrentText(obliview_selected_city)
+        else:
+            self.comboBoxObliView.setCurrentIndex(0)
 
         # -------------------------------------------------------------------------------------------------------------------------------------------
         # Ustawia zaznaczony radioButton na podstawie konfiguracji
@@ -39,11 +43,18 @@ class SettingsDialog(QDialog, FORM_CLASS):
         self.checkBoxClipboardMonitoring.setChecked(
             bool(plugin_config.data.get("clipboard_monitoring_enabled"))
         )
+
         self.checkBoxClipboardZoom.setChecked(
             bool(plugin_config.data.get("clipboard_zoom_enabled"))
         )
+
         self.spinBoxClipboardZoom.setValue(
             int(plugin_config.data.get("clipboard_zoom_scale"))
+        )
+
+        # --- nowe opcje filtr Gdańsk ---
+        self.checkBoxGdanskFilter.setChecked(
+            bool(plugin_config.data.get("gdansk_filter_enabled"))
         )
 
         # -------------------------------------------------------------------------------------------------------------------------------------------
@@ -68,6 +79,9 @@ class SettingsDialog(QDialog, FORM_CLASS):
         plugin_config.data["clipboard_monitoring_enabled"] = self.checkBoxClipboardMonitoring.isChecked()
         plugin_config.data["clipboard_zoom_enabled"] = self.checkBoxClipboardZoom.isChecked()
         plugin_config.data["clipboard_zoom_scale"] = int(self.spinBoxClipboardZoom.value())
+
+        # zapis opcji filtrowania Gdańsk
+        plugin_config.data["gdansk_filter_enabled"] = self.checkBoxGdanskFilter.isChecked()
 
         plugin_config.save_config()
 

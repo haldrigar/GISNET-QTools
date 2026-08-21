@@ -5,7 +5,7 @@ from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QApplication, QAction, QInputDialog, QMessageBox, QToolBar
 
-from qgis.core import (QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsPointXY, QgsProject)
+from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsPointXY, QgsProject
 
 from .tools.Obliview import Obliview
 from .tools.FilterProject import set_project_filter
@@ -27,7 +27,9 @@ class GisnetQTools:
         self.toolbar_created_by_plugin = False # Flaga informująca, czy pasek narzędzi został utworzony przez wtyczkę
         self.actions = [] # Lista akcji dodanych do paska narzędzi
 
-        self.this_tool = None # Narzędzie mapy (QgsMapTool) używane przez wtyczkę
+        self.obliviewTool = None # Narzędzie mapy (QgsMapTool) używane przez wtyczkę
+
+        self.filter_button_action = None  # Przycisk filtrowania Gdańsk
 
         # monitor schowka
         self.clipboard = QApplication.clipboard()
@@ -38,12 +40,6 @@ class GisnetQTools:
         """ Metoda initGui jest wywoływana podczas inicjalizacji wtyczki i służy do tworzenia paska narzędzi oraz dodawania przycisków do tego paska. """
 
         self.toolbar = QToolBar("GISNET", self.iface.mainWindow()) # Tworzymy nowy pasek narzędzi o nazwie "GISNET" i przypisujemy go do głównego okna QGIS
-
-        #self.iface.mainWindow().addToolBar(Qt.TopToolBarArea, self.toolbar) # Dodajemy pasek narzędzi do głównego okna QGIS w górnej części interfejsu (Qt.TopToolBarArea)
-
-        # Kompatybilność Qt5/Qt6 (QGIS 3/4):
-        # - Qt6: Qt.ToolBarArea.TopToolBarArea
-        # - Qt5: Qt.TopToolBarArea
 
         toolbar_area = Qt.ToolBarArea.TopToolBarArea
 
@@ -59,13 +55,16 @@ class GisnetQTools:
             status_tip="Uruchom portal ObliView we wskazanym miejscu",
         )
 
-        self.add_button_to_toolbar(
-            ikona_nazwa="filter.png",
-            tekst="Filtruj obręb",
-            metoda_callback=self.toolbar_set_project_filter_click,
-            status_tip="Filtruje warstwy projektu po KOD_OBREBU",
-        )
+        # Przycisk filtrowania dodajemy tylko jeśli opcja jest włączona
+        if plugin_config.data.get("gdansk_filter_enabled"):
+            self.filter_button_action = self.add_button_to_toolbar(
+                ikona_nazwa="filter.png",
+                tekst="Filtruj obręb",
+                metoda_callback=self.toolbar_set_project_filter_click,
+                status_tip="Filtruje warstwy projektu po KOD_OBREBU",
+            )
 
+        # Dodaj przycisk ustawień wtyczki
         self.add_button_to_toolbar(
             ikona_nazwa="settings.png",
             tekst="Ustawienia",
@@ -77,8 +76,8 @@ class GisnetQTools:
     def toolbar_obliview_click(self):
         """Uruchamia dedykowane narzędzie wyboru punktu na mapie."""
 
-        self.this_tool = Obliview(self.iface.mapCanvas(), self.iface)
-        self.iface.mapCanvas().setMapTool(self.this_tool)
+        self.obliviewTool = Obliview(self.iface.mapCanvas(), self.iface)
+        self.iface.mapCanvas().setMapTool(self.obliviewTool)
 
     # ===============================================================================================================================================
     def toolbar_set_project_filter_click(self):
@@ -115,6 +114,7 @@ class GisnetQTools:
 
         # W Qt6 / PyQt6 usunięto podkreślenie na końcu nazwy metody - używamy exec() zamiast exec_()
         if dialog.exec(): # Zamyka okno dialogowe z wynikiem QDialog.Accepted
+            self.update_filter_button_visibility()  # Aktualizuj widoczność przycisku
             self.iface.messageBar().pushMessage("GISNET QTools", "Pomyślnie zaktualizowano konfigurację.", duration=3)
 
     # ===============================================================================================================================================
@@ -128,36 +128,34 @@ class GisnetQTools:
         akcja.setStatusTip(status_tip)
         akcja.triggered.connect(metoda_callback)
 
-        self.toolbar.addAction(akcja) # Dodajemy akcję do paska narzędzi
-        self.actions.append(akcja) # Dodajemy akcję do listy akcji wtyczki, aby móc je później usunąć podczas wyłączania wtyczki
+        self.toolbar.addAction(akcja)
+        self.actions.append(akcja)
+
+        return akcja
 
     # ===============================================================================================================================================
     def on_clipboard_changed(self):
         """Obsługuje zmiany w schowku i próbuje wykryć współrzędne."""
 
-        try:
-            if not plugin_config.data.get("clipboard_monitoring_enabled", True):
-                return
+        if not plugin_config.data.get("clipboard_monitoring_enabled", True):
+            return
 
-            text = self.clipboard.text()
-            if not text:
-                return
+        text = self.clipboard.text()
+        if not text:
+            return
 
-            point = self._parse_coordinates_from_clipboard(text)
-            if point is None:
-                return
+        point = self._parse_coordinates_from_clipboard(text)
+        if point is None:
+            return
 
-            canvas = self.iface.mapCanvas()
-            canvas.setCenter(point)
+        canvas = self.iface.mapCanvas()
+        canvas.setCenter(point)
 
-            if plugin_config.data.get("clipboard_zoom_enabled", True):
-                zoom_scale = int(plugin_config.data.get("clipboard_zoom_scale"))
-                canvas.zoomScale(zoom_scale)
+        if plugin_config.data.get("clipboard_zoom_enabled", True):
+            zoom_scale = int(plugin_config.data.get("clipboard_zoom_scale"))
+            canvas.zoomScale(zoom_scale)
 
-            canvas.refresh()
-
-        except Exception:
-            pass
+        canvas.refresh()
 
     # ===============================================================================================================================================
     def _parse_coordinates_from_clipboard(self, text):
@@ -209,6 +207,26 @@ class GisnetQTools:
         return point
 
     # ===============================================================================================================================================
+    def update_filter_button_visibility(self):
+        """Aktualizuje widoczność przycisku filtrowania na podstawie ustawień."""
+
+        is_enabled = plugin_config.data.get("gdansk_filter_enabled", False)
+
+        if is_enabled and self.filter_button_action is None:
+            # Pokaż przycisk - dodaj go do paska narzędzi
+            self.filter_button_action = self.add_button_to_toolbar(
+                ikona_nazwa="filter.png",
+                tekst="Filtruj obręb",
+                metoda_callback=self.toolbar_set_project_filter_click,
+                status_tip="Filtruje warstwy projektu po KOD_OBREBU",
+            )
+        elif not is_enabled and self.filter_button_action is not None:
+            # Ukryj przycisk - usuń go z paska narzędzi
+            self.toolbar.removeAction(self.filter_button_action)
+            self.actions.remove(self.filter_button_action)
+            self.filter_button_action = None
+
+    # ===============================================================================================================================================
     def unload(self):
         """Czyści akcje i pasek narzędzi podczas wyłączania wtyczki."""
 
@@ -223,4 +241,6 @@ class GisnetQTools:
         self.actions.clear()
         self.toolbar = None
         self.toolbar_created_by_plugin = False
-        self.this_tool = None
+        self.obliviewTool = None
+
+        self.clipboard.dataChanged.disconnect(self.on_clipboard_changed)
