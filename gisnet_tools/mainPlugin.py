@@ -53,13 +53,16 @@ class GisnetQTools:
         )
 
         # Dodaj przycisk do paska narzędzi, który uruchamia filtrację warstw projektu po KOD_OBREBU, jeśli opcja jest włączona w ustawieniach
-        if plugin_config.data.get("gdansk_filter_enabled"):
-            self.filter_button_action = self.add_button_to_toolbar(
-                ikona_nazwa="filter.png",
-                tekst="Filtruj obręb",
-                metoda_callback=self.toolbar_set_project_filter_click,
-                status_tip="Filtruje warstwy projektu po KOD_OBREBU",
-            )
+        self.filter_button_action = self.add_button_to_toolbar(
+            ikona_nazwa="filter.png",
+            tekst="Filtruj obręb",
+            metoda_callback=self.toolbar_set_project_filter_click,
+            status_tip="Filtruje warstwy projektu po KOD_OBREBU",
+        )
+
+        # Sterowanie widocznością na start
+        is_filter_enabled = plugin_config.data.get("gdansk_filter_enabled")
+        self.filter_button_action.setVisible(is_filter_enabled)
 
         # Dodaj przycisk ustawień wtyczki
         self.add_button_to_toolbar(
@@ -139,20 +142,8 @@ class GisnetQTools:
 
         is_enabled = plugin_config.data.get("gdansk_filter_enabled", False) # Pobiera wartość z konfiguracji wtyczki, która określa, czy filtracja Gdańsk jest włączona
 
-        if is_enabled and self.filter_button_action is None:
-            # Dodaj przycisk do paska narzędzi, jeśli jest włączony w ustawieniach i nie został jeszcze dodany
-            self.filter_button_action = self.add_button_to_toolbar(
-                ikona_nazwa="filter.png",
-                tekst="Filtruj obręb",
-                metoda_callback=self.toolbar_set_project_filter_click,
-                status_tip="Filtruje warstwy projektu po KOD_OBREBU",
-            )
-        elif not is_enabled and self.filter_button_action is not None:
-            # Ukryj przycisk - usuń go z paska narzędzi
-            self.toolbar.removeAction(self.filter_button_action)
-            self.actions.remove(self.filter_button_action)
-            self.filter_button_action.deleteLater() # Usuń akcję z pamięci
-            self.filter_button_action = None
+        if self.filter_button_action:
+            self.filter_button_action.setVisible(is_enabled)
 
     # ===============================================================================================================================================
     def unload(self):

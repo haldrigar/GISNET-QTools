@@ -46,7 +46,7 @@ deprecated=False
 hasProcessingProvider=no
 
 changelog=
-    0.6 - Dodanie możliwości wyłączenia dedykowanych dla innych opcji
+    0.6 - Dodanie możliwości wyłączenia narzędzi dedykowanych. Zoom na współrzędne obsługuje transormacje WGS84 / PL-1992 / PL-2000
     0.5 - Dodanie opcji ustawiania mapy na współrzędne skopiowane do schowka
     0.4.2 - Dodana nowa warstwa do filtrów
     0.4.1 - Poprawki kompatybilności

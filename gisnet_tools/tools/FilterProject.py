@@ -22,7 +22,7 @@ def set_project_filter(kod_obrebu, iface):
         lista_nazw = "\n- ".join(active_edits_layers)
 
         QMessageBox.warning(
-            None,
+            iface.mainWindow(),
             "Wykryto otwartą edycję",
             f"Operacja została przerwana! Następujące warstwy są w trybie edycji:\n\n- {lista_nazw}\n\n"
             f"Zapisz zmiany lub wyłącz edycję dla tych warstw przed przeładowaniem projektu."

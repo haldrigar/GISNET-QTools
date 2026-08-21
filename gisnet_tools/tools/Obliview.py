@@ -43,6 +43,7 @@ class Obliview(QgsMapToolEmitPoint):
         return transform.transform(point)
 
     # ===============================================================================================================================================
+    @staticmethod
     def _build_obliview_url(x_coord, y_coord):
         """Buduje adres URL do portalu ObliView."""
 
