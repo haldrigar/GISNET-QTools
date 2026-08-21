@@ -9,11 +9,12 @@ from .Config import plugin_config
 class Obliview(QgsMapToolEmitPoint):
     """Narzędzie mapowe otwierające ObliView dla klikniętego punktu."""
 
-    TARGET_CRS = "EPSG:3857"
+    TARGET_CRS = "EPSG:3857" # Docelowy układ współrzędnych dla portalu ObliView (Web Mercator)
 
     # ===============================================================================================================================================
     def __init__(self, canvas, iface):
         """Inicjalizuje narzędzie mapowe dla portalu ObliView."""
+
         super().__init__(canvas)
         self.canvas = canvas
         self.iface = iface
@@ -21,17 +22,14 @@ class Obliview(QgsMapToolEmitPoint):
     # ===============================================================================================================================================
     def canvasReleaseEvent(self, event):
         """Obsługuje kliknięcie użytkownika na mapie."""
+
         try:
             clicked_point = self.toMapCoordinates(event.pos())
             point_3857 = self._transform_point_to_target_crs(clicked_point)
             url = self._build_obliview_url(point_3857.x(), point_3857.y())
             webbrowser.open(url)
         except Exception as exc:
-            QMessageBox.critical(
-                self.iface.mainWindow(),
-                "GISNET QTools",
-                f"Nie udało się otworzyć ObliView: {exc}",
-            )
+            QMessageBox.critical(self.iface.mainWindow(), "GISNET QTools", f"Nie udało się otworzyć ObliView: {exc}")
         finally:
             self.iface.actionPan().trigger()
 
@@ -45,7 +43,6 @@ class Obliview(QgsMapToolEmitPoint):
         return transform.transform(point)
 
     # ===============================================================================================================================================
-    @staticmethod
     def _build_obliview_url(x_coord, y_coord):
         """Buduje adres URL do portalu ObliView."""
 

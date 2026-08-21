@@ -1,6 +1,7 @@
 import os
 
 from qgis.PyQt import uic
+from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtWidgets import QDialog, QRadioButton
 
 from ..tools.Config import plugin_config
@@ -15,6 +16,8 @@ class SettingsDialog(QDialog, FORM_CLASS):
         """Konstruktor okna ładowanego z Qt Designera."""
 
         super().__init__(parent) # Wywołuje konstruktor klasy bazowej QDialog
+
+        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose) # Ustawia atrybut, aby okno było usuwane z pamięci po zamknięciu
 
         self.setupUi(self) # Inicjalizuje interfejs użytkownika z pliku .ui
 
